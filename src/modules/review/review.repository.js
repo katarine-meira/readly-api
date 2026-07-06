@@ -1,26 +1,37 @@
-import prisma from "../../config/database.js"
+import prisma from "../../config/database.js";
 
 const createReview = async (data) => {
-  return prisma.review.create({ data });
-};
-
-const findReviewByMovieId = (movieId) => {
-  return prisma.review.findMany({
-    where: {movieId},
+  return prisma.review.create({
+    data,
     include: {
       user: {
         select: {
           id: true,
-          name: true
-        }
-      }
+          name: true,
+        },
+      },
+      media: true,
+    },
+  });
+};
+
+const findReviewByMediaId = async (mediaId) => {
+  return prisma.review.findMany({
+    where: {
+      mediaId,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
     orderBy: {
-      createdAt: "desc"
-    }
-  })
-}
-export {
-  createReview,
-  findReviewByMovieId
+      createdAt: "desc",
+    },
+  });
 };
+
+export { createReview, findReviewByMediaId };

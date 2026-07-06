@@ -1,10 +1,9 @@
-import express from "express"
+import express from "express";
 import authMiddleware from "../../middlewares/auth.middleware.js";
 import { createReviewController } from "./review.controller.js";
 
-
 const router = express.Router();
 
-router.post("/", authMiddleware, createReviewController );
+router.post("/", authMiddleware, createReviewController);
 
-export default router
+export default router;

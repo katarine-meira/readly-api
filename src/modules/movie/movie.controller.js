@@ -1,15 +1,15 @@
 import { getMovieDetailsService, searchMoviesService } from "./movie.service.js";
 
 const getMovieDetailsController = async (req, res) => {
-    try {
-        const { tmdbId } = req.params;
+  try {
+    const { tmdbId } = req.params;
 
-        const data = await getMovieDetailsService(Number(tmdbId));
-        
-        res.json(data);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+    const data = await getMovieDetailsService(Number(tmdbId));
+
+    res.json(data);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 const getMoviesController = async (req, res) => {
@@ -20,7 +20,7 @@ const getMoviesController = async (req, res) => {
       search,
       page,
       genre,
-      sort
+      sort,
     });
 
     res.json(data);
@@ -29,4 +29,4 @@ const getMoviesController = async (req, res) => {
   }
 };
 
-export { getMovieDetailsController, getMoviesController}
+export { getMovieDetailsController, getMoviesController };

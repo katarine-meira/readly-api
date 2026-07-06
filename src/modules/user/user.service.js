@@ -1,36 +1,53 @@
+import bcrypt from "bcrypt";
 import { generateToken } from "../../utils/jwt.js";
-import { createUser, findUserByEmail } from "./user.repository.js"
-import bcrypt from "bcrypt"
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+} from "./user.repository.js";
 
 const registerUser = async (name, email, password) => {
-    const userExists = await findUserByEmail(email);
+  const userExists = await findUserByEmail(email);
 
-    if(userExists) {
-        throw new Error("Email já está em uso");
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
+  if (userExists) {
+    throw new Error("Email já está em uso");
+  }
 
-    return createUser({
-        name,
-        email,
-        password: hashedPassword
-    });
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  return createUser({
+    name,
+    email,
+    password: hashedPassword,
+  });
 };
 
 const loginUser = async (email, password) => {
-    const user = await findUserByEmail(email);
+  const user = await findUserByEmail(email);
 
-    if(!user) {
-        throw new Error("Usuário não encontrado");
-    }
-    const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!user) {
+    throw new Error("Usuário não encontrado");
+  }
 
-    if(!passwordMatch) {
-        throw new Error("Senha Inválida");
-    }
+  const passwordMatch = await bcrypt.compare(password, user.password);
 
-    const token = generateToken(user);
-    return {user, token}
-}
+  if (!passwordMatch) {
+    throw new Error("Senha inválida");
+  }
 
-export { registerUser, loginUser };
+  const token = generateToken(user);
+
+  return { user, token };
+};
+
+const getMeService = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new Error("Usuário não encontrado");
+  }
+
+  return user;
+};
+
+export { registerUser, loginUser, getMeService };
