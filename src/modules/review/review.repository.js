@@ -10,16 +10,42 @@ const createReview = async (data) => {
           name: true,
         },
       },
-      media: true,
+      media: {
+        include: {
+          movieDetails: true,
+          bookDetails: true,
+        },
+      },
+    },
+  });
+};
+
+const findReviewById = async (id) => {
+  return prisma.review.findUnique({
+    where: { id },
+    include: {
+      media: {
+        include: {
+          movieDetails: true,
+          bookDetails: true,
+        },
+      },
+    },
+  });
+};
+
+const findUserReviewByMediaId = async ({ userId, mediaId }) => {
+  return prisma.review.findFirst({
+    where: {
+      userId,
+      mediaId,
     },
   });
 };
 
 const findReviewByMediaId = async (mediaId) => {
   return prisma.review.findMany({
-    where: {
-      mediaId,
-    },
+    where: { mediaId },
     include: {
       user: {
         select: {
@@ -34,4 +60,50 @@ const findReviewByMediaId = async (mediaId) => {
   });
 };
 
-export { createReview, findReviewByMediaId };
+const findReviewsByUserId = async (userId) => {
+  return prisma.review.findMany({
+    where: { userId },
+    include: {
+      media: {
+        include: {
+          movieDetails: true,
+          bookDetails: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+const updateReview = async ({ id, data }) => {
+  return prisma.review.update({
+    where: { id },
+    data,
+    include: {
+      media: {
+        include: {
+          movieDetails: true,
+          bookDetails: true,
+        },
+      },
+    },
+  });
+};
+
+const deleteReview = async (id) => {
+  return prisma.review.delete({
+    where: { id },
+  });
+};
+
+export {
+  createReview,
+  findReviewById,
+  findUserReviewByMediaId,
+  findReviewByMediaId,
+  findReviewsByUserId,
+  updateReview,
+  deleteReview,
+};

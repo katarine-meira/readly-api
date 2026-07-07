@@ -1,4 +1,10 @@
-import { loginUser, registerUser, getMeService } from "./user.service.js";
+import {
+  loginUser,
+  registerUser,
+  getMeService,
+  getPublicUserProfileService,
+  searchUsersService,
+} from "./user.service.js";
 
 const register = async (req, res) => {
   try {
@@ -41,4 +47,31 @@ const me = async (req, res) => {
   }
 };
 
-export { register, login, me };
+const getPublicUserProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await getPublicUserProfileService(id);
+
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const searchUsers = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const users = await searchUsersService({
+      search,
+      currentUserId: req.user.id,
+    });
+
+    res.json(users);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export { register, login, me, getPublicUserProfile, searchUsers };

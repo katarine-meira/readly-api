@@ -4,6 +4,11 @@ import {
   createUser,
   findUserByEmail,
   findUserById,
+  findPublicUserById,
+  countFollowersByUserId,
+  countFollowingByUserId,
+  searchUsersByName,
+  findFollowingIdsByUserId,
 } from "./user.repository.js";
 
 const registerUser = async (name, email, password) => {
@@ -50,4 +55,54 @@ const getMeService = async (userId) => {
   return user;
 };
 
-export { registerUser, loginUser, getMeService };
+const getPublicUserProfileService = async (userId) => {
+  const [user, followersCount, followingCount] = await Promise.all([
+    findPublicUserById(userId),
+    countFollowersByUserId(userId),
+    countFollowingByUserId(userId),
+  ]);
+
+  if (!user) {
+    throw new Error("Usuário não encontrado");
+  }
+
+  const { _count, ...userData } = user;
+
+  return {
+    ...userData,
+    stats: {
+      followers: followersCount,
+      following: followingCount,
+      reviews: _count.reviews,
+      lists: _count.lists,
+    },
+  };
+};
+
+const searchUsersService = async ({ search, currentUserId }) => {
+  if (!search || search.trim().length < 2) {
+    throw new Error("Informe pelo menos 2 caracteres para buscar usuários");
+  }
+
+  const users = await searchUsersByName({
+    search: search.trim(),
+    excludeUserId: currentUserId,
+  });
+
+  const following = await findFollowingIdsByUserId(currentUserId);
+
+  const followingIds = following.map((item) => item.followingId);
+
+  return users.map((user) => ({
+    ...user,
+    isFollowing: followingIds.includes(user.id),
+  }));
+};
+
+export {
+  registerUser,
+  loginUser,
+  getMeService,
+  getPublicUserProfileService,
+  searchUsersService,
+};
