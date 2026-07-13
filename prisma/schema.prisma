@@ -81,6 +81,7 @@ model Review {
 model List {
   id         String         @id @default(uuid())
   name       String
+  description String?
   visibility ListVisibility @default(PUBLIC)
   createdAt  DateTime       @default(now())
 

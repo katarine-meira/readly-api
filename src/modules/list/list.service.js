@@ -12,7 +12,7 @@ import {
 import { findMediaById } from "../media/media.repository.js";
 
 const createListService = async (userId, data) => {
-  const { name, visibility = "PUBLIC" } = data;
+  const { name, description, visibility = "PUBLIC" } = data;
 
   if (!name || name.trim() === "") {
     throw new Error("Nome da lista é obrigatório");
@@ -21,6 +21,7 @@ const createListService = async (userId, data) => {
   return createList({
     userId,
     name: name.trim(),
+    description: description?.trim() || null,
     visibility,
   });
 };
@@ -33,7 +34,7 @@ const getPublicUserListsService = async (userId) => {
   return findPublicListsByUserId(userId);
 };
 
-const updateListService = async ({ userId, listId, name, visibility }) => {
+const updateListService = async ({ userId, listId, name, description, visibility }) => {
   const list = await findListById(listId);
 
   if (!list) {
@@ -54,7 +55,15 @@ const updateListService = async ({ userId, listId, name, visibility }) => {
     data.name = name.trim();
   }
 
+  if (description !== undefined) {
+    data.description = description?.trim() || null;
+  }
+
   if (visibility !== undefined) {
+    if (!["PUBLIC", "PRIVATE"].includes(visibility)) {
+      throw new Error("Visibilidade inválida");
+    }
+
     data.visibility = visibility;
   }
 

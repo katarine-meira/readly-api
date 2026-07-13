@@ -49,6 +49,7 @@ const updateListController = async (req, res) => {
       userId: req.user.id,
       listId,
       name,
+      description,
       visibility,
     });
 
